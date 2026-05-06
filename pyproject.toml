@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "vrs"
+name = "writ"
 version = "0.1.0"
 description = "Lightning-fast terminal Bible reference and reading tool"
 readme = "README.md"
@@ -16,13 +16,13 @@ dependencies = [
 ]
 
 [project.scripts]
-vrs = "vrs.cli:app"
+writ = "writ.cli:app"
 
 [project.optional-dependencies]
 dev = ["pytest>=7", "pytest-cov"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["vrs"]
+packages = ["writ"]
 include = ["data/**"]
 
 [tool.pytest.ini_options]
