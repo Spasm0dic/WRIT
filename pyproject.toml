@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "writ"
+version = "0.1.0"
+description = "Lightning-fast terminal Bible reference and reading tool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["bible", "terminal", "cli", "reading"]
+dependencies = [
+    "typer>=0.12",
+    "rich>=13",
+]
+
+[project.scripts]
+writ = "writ.cli:app"
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "pytest-cov"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["writ"]
+include = ["data/**"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
