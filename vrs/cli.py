@@ -50,7 +50,7 @@ from .plans import (
 from .search import search_text
 
 app = typer.Typer(
-    name="writ",
+    name="vrs",
     help="Lightning-fast terminal Bible reference and reading tool.",
     invoke_without_command=True,
     no_args_is_help=False,

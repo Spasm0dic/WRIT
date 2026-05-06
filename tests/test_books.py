@@ -1,4 +1,4 @@
-from writ.books import resolve_book, book_by_number, BOOKS
+from vrs.books import resolve_book, book_by_number, BOOKS
 
 
 def test_all_66_books_present():
@@ -63,7 +63,7 @@ def test_no_duplicate_canonical_abbrevs():
 
 
 def test_parse_verse_spec():
-    from writ.lookup import parse_verse_spec
+    from vrs.lookup import parse_verse_spec
     assert parse_verse_spec("1")     == [(1, 1)]
     assert parse_verse_spec("1-3")   == [(1, 3)]
     assert parse_verse_spec("1,5")   == [(1, 1), (5, 5)]

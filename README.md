@@ -1,14 +1,14 @@
-# writ
+# vrs
 
 Lightning-fast terminal Bible reference and reading tool.  
 Built for speed, offline-first, cyberdeck-friendly.
 
 ```
-writ ge 1 1-3          # Genesis 1:1-3 (default translation)
-writ jn 3 16 -t kjv    # John 3:16 in KJV
-writ ps 23             # Psalm 23, interactive chapter navigation
-writ daily             # verse of the day
-writ continue          # resume active reading plan
+vrs ge 1 1-3          # Genesis 1:1-3 (default translation)
+vrs jn 3 16 -t kjv    # John 3:16 in KJV
+vrs ps 23             # Psalm 23, interactive chapter navigation
+vrs daily             # verse of the day
+vrs continue          # resume active reading plan
 ```
 
 ---
@@ -25,7 +25,7 @@ Requires Python 3.10+.  Dependencies: `typer`, `rich`.
 
 ## Getting a Translation
 
-writ ships with no translation text — Bible translations have complex licensing.  
+vrs ships with no translation text — Bible translations have complex licensing.  
 The **World English Bible (WEB)** is fully public domain and a great default.
 
 **Quick start with WEB:**
@@ -41,7 +41,7 @@ The **World English Bible (WEB)** is fully public domain and a great default.
 
 3. Set it as default:
    ```bash
-   writ set translation web
+   vrs set translation web
    ```
 
 **Other formats supported by the importer:**
@@ -59,15 +59,15 @@ The **World English Bible (WEB)** is fully public domain and a great default.
 ### Lookup (default)
 
 ```
-writ <book> [chapter] [verses] [-t translation] [-c compare]
+vrs <book> [chapter] [verses] [-t translation] [-c compare]
 
-writ ge                   # Genesis ch.1, interactive nav
-writ ge 1                 # Genesis 1, interactive nav
-writ ge 1 1               # Genesis 1:1
-writ ge 1 1-3             # Genesis 1:1-3
-writ ro 8 28,35           # Romans 8:28 and 8:35
-writ ge 1 1 -t esv        # with specific translation
-writ ge 1 1 -c kjv        # display side by side with KJV
+vrs ge                   # Genesis ch.1, interactive nav
+vrs ge 1                 # Genesis 1, interactive nav
+vrs ge 1 1               # Genesis 1:1
+vrs ge 1 1-3             # Genesis 1:1-3
+vrs ro 8 28,35           # Romans 8:28 and 8:35
+vrs ge 1 1 -t esv        # with specific translation
+vrs ge 1 1 -c kjv        # display side by side with KJV
 ```
 
 After displaying a verse, a quick-action bar appears:  
@@ -78,7 +78,7 @@ During chapter reading, the nav bar shows:
 
 ### Book abbreviations
 
-All 66 books have short canonical abbreviations. Run `writ books` to see them all.
+All 66 books have short canonical abbreviations. Run `vrs books` to see them all.
 
 Key conflict resolutions:
 
@@ -93,12 +93,12 @@ Key conflict resolutions:
 ### Reading plans
 
 ```bash
-writ plan load data/plans/gospels.txt   # import a plan
-writ plan list                          # list loaded plans
-writ plan set gospels                   # set active plan
-writ plan status                        # show progress
-writ continue                           # read next entry
-writ done                               # mark done, advance
+vrs plan load data/plans/gospels.txt   # import a plan
+vrs plan list                          # list loaded plans
+vrs plan set gospels                   # set active plan
+vrs plan status                        # show progress
+vrs continue                           # read next entry
+vrs done                               # mark done, advance
 ```
 
 **Plan file format** — two variants:
@@ -120,29 +120,29 @@ Bundled plans in `data/plans/`:
 - `new-testament.txt` — full NT, canonical order
 - `psalms-and-proverbs.txt` — interleaved wisdom literature
 
-If you're behind on a dated plan, `writ continue` will ask whether to catch up,
+If you're behind on a dated plan, `vrs continue` will ask whether to catch up,
 reset to today, or continue from where you left off.
 
 ### Bookmarks
 
 ```bash
-writ bookmark add devotionals/morning   # bookmark last verse
-writ bookmark add path ge 1 1           # bookmark specific verse
-writ bm list                            # tree view of all bookmarks
-writ bm list devotionals/               # browse subtree
-writ bm go 3                            # jump to bookmark #3
-writ bm remove 3
+vrs bookmark add devotionals/morning   # bookmark last verse
+vrs bookmark add path ge 1 1           # bookmark specific verse
+vrs bm list                            # tree view of all bookmarks
+vrs bm list devotionals/               # browse subtree
+vrs bm go 3                            # jump to bookmark #3
+vrs bm remove 3
 ```
 
 ### Notes (margin annotations)
 
 ```bash
-writ note add "God's sovereignty in creation"   # annotate last verse
-writ note add "key verse" ge 1 1                # annotate specific verse
-writ note list                                  # all notes
-writ note list ge                               # notes in Genesis
-writ note list ge 1                             # notes in Genesis 1
-writ note remove ge 1 1
+vrs note add "God's sovereignty in creation"   # annotate last verse
+vrs note add "key verse" ge 1 1                # annotate specific verse
+vrs note list                                  # all notes
+vrs note list ge                               # notes in Genesis
+vrs note list ge 1                             # notes in Genesis 1
+vrs note remove ge 1 1
 ```
 
 Notes are translation-agnostic and display inline when reading.
@@ -150,34 +150,34 @@ Notes are translation-agnostic and display inline when reading.
 ### Search
 
 ```bash
-writ search "love your neighbor"
-writ search "faith" -t kjv
-writ search "fear not" -b is          # search within Isaiah only
+vrs search "love your neighbor"
+vrs search "faith" -t kjv
+vrs search "fear not" -b is          # search within Isaiah only
 ```
 
 ### Other
 
 ```bash
-writ daily                            # verse of the day (deterministic, offline)
-writ random                           # random verse
-writ random ps                        # random verse from Psalms
-writ compare ge 1 1 web,kjv,esv       # side-by-side translation comparison
-writ history                          # recent reading history + streak
-writ translations                     # list installed translations
-writ books                            # list all books + abbreviations
-writ set translation web              # set default translation
-writ set plan gospels                 # set active plan
+vrs daily                            # verse of the day (deterministic, offline)
+vrs random                           # random verse
+vrs random ps                        # random verse from Psalms
+vrs compare ge 1 1 web,kjv,esv       # side-by-side translation comparison
+vrs history                          # recent reading history + streak
+vrs translations                     # list installed translations
+vrs books                            # list all books + abbreviations
+vrs set translation web              # set default translation
+vrs set plan gospels                 # set active plan
 ```
 
 ---
 
 ## Data storage
 
-All user data lives in `~/.local/share/writ/` (override with `$WRIT_DATA`):
+All user data lives in `~/.local/share/vrs/` (override with `$VRS_DATA`):
 
 ```
-~/.local/share/writ/
-├── writ.db                  # bookmarks, notes, plans, history, state
+~/.local/share/vrs/
+├── vrs.db                  # bookmarks, notes, plans, history, state
 └── translations/
     ├── web.db
     ├── kjv.db
@@ -189,8 +189,8 @@ All user data lives in `~/.local/share/writ/` (override with `$WRIT_DATA`):
 ## Shell completion
 
 ```bash
-writ --install-completion bash    # bash
-writ --install-completion zsh     # zsh
+vrs --install-completion bash    # bash
+vrs --install-completion zsh     # zsh
 ```
 
 ---

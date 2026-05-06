@@ -2,9 +2,9 @@ import os
 import sqlite3
 from pathlib import Path
 
-DATA_DIR = Path(os.environ.get("WRIT_DATA", Path.home() / ".local" / "share" / "writ"))
+DATA_DIR = Path(os.environ.get("VRS_DATA", Path.home() / ".local" / "share" / "vrs"))
 TRANSLATIONS_DIR = DATA_DIR / "translations"
-APP_DB_PATH = DATA_DIR / "writ.db"
+APP_DB_PATH = DATA_DIR / "vrs.db"
 
 _APP_SCHEMA = """
 CREATE TABLE IF NOT EXISTS bookmarks (
