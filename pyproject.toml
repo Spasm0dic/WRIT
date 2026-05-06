@@ -9,11 +9,33 @@ description = "Lightning-fast terminal Bible reference and reading tool"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-keywords = ["bible", "terminal", "cli", "reading"]
+keywords = ["bible", "scripture", "terminal", "cli", "reading", "cyberdeck"]
+authors = [
+    {name = "Spasmodic-TLB"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Religion",
+    "Topic :: Utilities",
+]
 dependencies = [
     "typer>=0.12",
     "rich>=13",
 ]
+
+[project.urls]
+Homepage   = "https://github.com/Spasmodic-TLB/WORD"
+Repository = "https://github.com/Spasmodic-TLB/WORD"
+Issues     = "https://github.com/Spasmodic-TLB/WORD/issues"
 
 [project.scripts]
 writ = "writ.cli:app"

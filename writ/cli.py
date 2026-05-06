@@ -412,6 +412,91 @@ def compare(
     display_comparison(pairs)
 
 
+# ── First-time setup ─────────────────────────────────────────────────────────
+
+@app.command()
+def setup() -> None:
+    """Download and install the World English Bible (public domain) as the default translation."""
+    import urllib.request
+    import zipfile
+    import io
+    import csv
+    import sqlite3 as _sqlite3
+
+    from .db import TRANSLATIONS_DIR, APP_DB_PATH, get_app_db, set_state, ensure_dirs
+
+    # The scrollmapper bible_databases repo provides a clean public-domain WEB CSV.
+    # Format: id,b,c,v,t  (id = sequential verse number, b = book 1-66)
+    WEB_URL = (
+        "https://raw.githubusercontent.com/scrollmapper/"
+        "bible_databases/master/csv/t_web.csv"
+    )
+
+    ensure_dirs()
+    db_path = TRANSLATIONS_DIR / "web.db"
+
+    if db_path.exists():
+        if not Confirm.ask(
+            f"  [yellow]web.db already exists.[/yellow] Re-download and overwrite?",
+            default=False,
+        ):
+            print_info("skipped — run 'writ set translation web' if not already set")
+            return
+
+    console.print(f"[dim]Downloading World English Bible from scrollmapper/bible_databases…[/dim]")
+
+    try:
+        with urllib.request.urlopen(WEB_URL, timeout=30) as resp:
+            raw = resp.read().decode("utf-8")
+    except Exception as exc:
+        print_error(f"download failed: {exc}")
+        console.print(
+            "  You can import a Bible CSV manually:\n"
+            "  [dim]python scripts/import_translation.py <file.csv> -n web[/dim]"
+        )
+        raise typer.Exit(1)
+
+    # Parse CSV — scrollmapper format: id,b,c,v,t
+    rows: list[tuple[int, int, int, str]] = []
+    reader = csv.reader(raw.splitlines())
+    for line in reader:
+        if not line or len(line) < 5:
+            continue
+        id_raw, b_raw, c_raw, v_raw, text = line[0], line[1], line[2], line[3], line[4]
+        if b_raw.lower() in ("b", "book"):
+            continue  # header row
+        try:
+            rows.append((int(b_raw), int(c_raw), int(v_raw), text.strip()))
+        except ValueError:
+            continue
+
+    if not rows:
+        print_error("CSV parsed but no verses found — format may have changed.")
+        raise typer.Exit(1)
+
+    console.print(f"[dim]Writing {len(rows):,} verses to {db_path}…[/dim]")
+    conn = _sqlite3.connect(db_path)
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS verses "
+        "(book INTEGER, chapter INTEGER, verse INTEGER, text TEXT, "
+        "PRIMARY KEY (book, chapter, verse))"
+    )
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_bcv ON verses(book, chapter, verse)")
+    conn.executemany(
+        "INSERT OR REPLACE INTO verses (book, chapter, verse, text) VALUES (?,?,?,?)", rows
+    )
+    conn.commit()
+    conn.close()
+
+    app_conn = get_app_db()
+    set_state(app_conn, "default_translation", "web")
+    app_conn.close()
+
+    print_success(f"World English Bible installed ({len(rows):,} verses)")
+    print_success("Default translation set to: web")
+    console.print("\n  You're ready. Try: [bold]writ ge 1[/bold]\n")
+
+
 # ── Information commands ──────────────────────────────────────────────────────
 
 @app.command()

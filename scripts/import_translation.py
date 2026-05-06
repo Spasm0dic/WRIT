@@ -100,10 +100,26 @@ def import_csv(fh, conn: sqlite3.Connection, delimiter: str = ",") -> int:
     reader = csv.reader(fh, delimiter=delimiter)
     rows = []
     skipped = 0
+    col_offset = 0  # set to 1 if first column is a sequential id (scrollmapper format)
+    first_data_row = True
     for line in reader:
-        if not line or len(line) < 4:
+        if not line:
             continue
-        b_raw, c_raw, v_raw, text = line[0], line[1], line[2], line[3]
+        # Auto-detect scrollmapper format: id,b,c,v,t (5 columns, first col is "id" or integer > 66)
+        if first_data_row and len(line) >= 5:
+            if line[0].lower() in ("id", "#"):
+                col_offset = 1  # header row with id prefix
+                first_data_row = False
+                continue
+            try:
+                if int(line[0]) > 66:  # sequential verse id, not a book number
+                    col_offset = 1
+            except ValueError:
+                pass
+            first_data_row = False
+        if len(line) < 4 + col_offset:
+            continue
+        b_raw, c_raw, v_raw, text = line[col_offset], line[col_offset+1], line[col_offset+2], line[col_offset+3]
         # Skip header rows
         if b_raw.lower() in ("b", "book", "book_num", "#"):
             continue

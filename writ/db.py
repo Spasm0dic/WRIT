@@ -58,13 +58,13 @@ CREATE TABLE IF NOT EXISTS state (
 """
 
 
-def _ensure_dirs() -> None:
+def ensure_dirs() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     TRANSLATIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def get_app_db() -> sqlite3.Connection:
-    _ensure_dirs()
+    ensure_dirs()
     conn = sqlite3.connect(APP_DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.executescript(_APP_SCHEMA)
@@ -86,7 +86,7 @@ def get_translation_db(translation: str) -> sqlite3.Connection:
 
 
 def list_translations() -> list[str]:
-    _ensure_dirs()
+    ensure_dirs()
     return sorted(p.stem for p in TRANSLATIONS_DIR.glob("*.db"))
 
 
