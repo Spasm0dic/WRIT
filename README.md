@@ -1,12 +1,12 @@
 # writ
 
 Lightning-fast terminal Bible reference and reading tool.  
-Built for speed, offline-first, cyberdeck-friendly.
+Offline-first, no account required, cyberdeck-friendly.
 
 ```
-writ ge 1 1-3          # Genesis 1:1-3 (default translation)
-writ jn 3 16 -t kjv    # John 3:16 in KJV
-writ ps 23             # Psalm 23, interactive chapter navigation
+writ ge 1 1-3          # Genesis 1:1-3
+writ jn 3 16           # John 3:16, interactive
+writ ps 23             # Psalm 23, chapter navigation
 writ daily             # verse of the day
 writ continue          # resume active reading plan
 ```
@@ -15,42 +15,49 @@ writ continue          # resume active reading plan
 
 ## Install
 
+One command — no pip, no system packages beyond Python 3.10:
+
 ```bash
-pip install .
+curl -fsSL https://raw.githubusercontent.com/Spasm0dic/WRIT/main/install.sh | bash
 ```
 
-Requires Python 3.10+.  Dependencies: `typer`, `rich`.
+This will:
+1. Create a Python virtualenv at `~/.local/share/writ/env`
+2. Install `writ` into that venv
+3. Symlink `writ` to `~/.local/bin/writ`
+4. Add `~/.local/bin` to your PATH if needed
+5. Download and install the World English Bible (public domain)
+
+After install, open a new terminal or run `source ~/.bashrc` and you're ready:
+
+```bash
+writ ge 1
+```
+
+**Requirements:** Python 3.10+, internet access for the initial translation download.
 
 ---
 
-## Getting a Translation
+## Translations
 
-writ ships with no translation text — Bible translations have complex licensing.  
-The **World English Bible (WEB)** is fully public domain and a great default.
+`writ setup` (run automatically on install) downloads the **World English Bible** — fully public domain, no license restrictions.
 
-**Quick start with WEB:**
+To add more translations, use the bundled importer:
 
-1. Download the CSV from [eBible.org](https://ebible.org) or the
-   [openbible.info labs bulk download](https://openbible.info/labs/parse/).  
-   The expected columns are: `b, c, v, t`  (book number, chapter, verse, text).
+```bash
+python scripts/import_translation.py file.csv -n kjv --format csv
+writ set translation kjv
+```
 
-2. Import it:
-   ```bash
-   python scripts/import_translation.py web.csv -n web --format csv
-   ```
+**Supported input formats:**
 
-3. Set it as default:
-   ```bash
-   writ set translation web
-   ```
-
-**Other formats supported by the importer:**
-
-| Format | Flag | Description |
-|--------|------|-------------|
+| Format | Flag | Example |
+|--------|------|-------|
 | CSV    | `--format csv` | `book,chapter,verse,text` |
 | TSV    | `--format tsv` | `book\tchapter\tverse\ttext` |
 | VPL    | `--format vpl` | `GEN 1:1 In the beginning...` |
+
+Also auto-detects the [scrollmapper/bible_databases](https://github.com/scrollmapper/bible_databases) CSV format (`id,b,c,v,t`).
 
 ---
 
@@ -66,19 +73,19 @@ writ ge 1                 # Genesis 1, interactive nav
 writ ge 1 1               # Genesis 1:1
 writ ge 1 1-3             # Genesis 1:1-3
 writ ro 8 28,35           # Romans 8:28 and 8:35
-writ ge 1 1 -t esv        # with specific translation
-writ ge 1 1 -c kjv        # display side by side with KJV
+writ ge 1 1 -t kjv        # specific translation
+writ ge 1 1 -c kjv        # side-by-side comparison with KJV
 ```
 
-After displaying a verse, a quick-action bar appears:  
+After displaying a verse, a quick-action bar appears:
 `[b]ookmark  [+]note  [q]uit`
 
-During chapter reading, the nav bar shows:  
+During chapter reading:
 `[p]rev  [n]ext  [b]ookmark  [+]note  [q]uit`
 
 ### Book abbreviations
 
-All 66 books have short canonical abbreviations. Run `writ books` to see them all.
+All 66 books have canonical short forms. Run `writ books` to see them all.
 
 Key conflict resolutions:
 
@@ -89,6 +96,8 @@ Key conflict resolutions:
 | `1sa` `2sa` | 1–2 Samuel |
 | `1ki` `2ki` | 1–2 Kings |
 | `1co` `2co` | 1–2 Corinthians |
+| `ps`  | Psalms |
+| `pr`  | Proverbs |
 
 ### Reading plans
 
@@ -101,7 +110,7 @@ writ continue                           # read next entry
 writ done                               # mark done, advance
 ```
 
-**Plan file format** — two variants:
+**Plan file format:**
 
 ```
 # Self-paced (no dates)
@@ -120,8 +129,7 @@ Bundled plans in `data/plans/`:
 - `new-testament.txt` — full NT, canonical order
 - `psalms-and-proverbs.txt` — interleaved wisdom literature
 
-If you're behind on a dated plan, `writ continue` will ask whether to catch up,
-reset to today, or continue from where you left off.
+If you're behind on a dated plan, `writ continue` prompts you to catch up, reset to today, or keep reading from where you left off.
 
 ### Bookmarks
 
@@ -129,7 +137,7 @@ reset to today, or continue from where you left off.
 writ bookmark add devotionals/morning   # bookmark last verse
 writ bookmark add path ge 1 1           # bookmark specific verse
 writ bm list                            # tree view of all bookmarks
-writ bm list devotionals/               # browse subtree
+writ bm list devotionals/               # browse a subtree
 writ bm go 3                            # jump to bookmark #3
 writ bm remove 3
 ```
@@ -145,7 +153,7 @@ writ note list ge 1                             # notes in Genesis 1
 writ note remove ge 1 1
 ```
 
-Notes are translation-agnostic and display inline when reading.
+Notes are translation-agnostic and appear inline when reading.
 
 ### Search
 
@@ -155,47 +163,46 @@ writ search "faith" -t kjv
 writ search "fear not" -b is          # search within Isaiah only
 ```
 
-### Other
+### Other commands
 
 ```bash
 writ daily                            # verse of the day (deterministic, offline)
 writ random                           # random verse
 writ random ps                        # random verse from Psalms
-writ compare ge 1 1 web,kjv,esv       # side-by-side translation comparison
+writ compare ge 1 1 web,kjv           # side-by-side translation comparison
 writ history                          # recent reading history + streak
 writ translations                     # list installed translations
-writ books                            # list all books + abbreviations
+writ books                            # all 66 books + abbreviations
 writ set translation web              # set default translation
-writ set plan gospels                 # set active plan
+writ setup                            # re-download / reinstall WEB translation
 ```
 
 ---
 
 ## Data storage
 
-All user data lives in `~/.local/share/writ/` (override with `$WRIT_DATA`):
+All user data lives at `~/.local/share/writ/` (override with `$WRIT_DATA`):
 
 ```
 ~/.local/share/writ/
-├── writ.db                  # bookmarks, notes, plans, history, state
+├── writ.db                  # bookmarks, notes, plans, history, settings
 └── translations/
     ├── web.db
-    ├── kjv.db
     └── ...
 ```
 
 ---
 
-## Shell completion
+## Uninstall
 
 ```bash
-writ --install-completion bash    # bash
-writ --install-completion zsh     # zsh
+rm -rf ~/.local/share/writ
+rm ~/.local/bin/writ
 ```
 
 ---
 
 ## Contributing
 
-Issues, PRs, and translation format support requests welcome.  
-See `scripts/import_translation.py` to add new input formats.
+Issues and PRs welcome at [github.com/Spasm0dic/WRIT](https://github.com/Spasm0dic/WRIT).  
+See `scripts/import_translation.py` to add new input format support.

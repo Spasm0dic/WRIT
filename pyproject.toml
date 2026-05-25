@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 license = {text = "MIT"}
 keywords = ["bible", "scripture", "terminal", "cli", "reading", "cyberdeck"]
 authors = [
-    {name = "Spasmodic-TLB"},
+    {name = "Spasm0dic"},
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -33,9 +33,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage   = "https://github.com/Spasmodic-TLB/WORD"
-Repository = "https://github.com/Spasmodic-TLB/WORD"
-Issues     = "https://github.com/Spasmodic-TLB/WORD/issues"
+Homepage   = "https://github.com/Spasm0dic/WRIT"
+Repository = "https://github.com/Spasm0dic/WRIT"
+Issues     = "https://github.com/Spasm0dic/WRIT/issues"
 
 [project.scripts]
 writ = "writ.cli:app"

@@ -7,7 +7,6 @@ from rich.panel import Panel
 from rich.text import Text
 from rich.tree import Tree
 from rich.table import Table
-from rich.prompt import Prompt
 
 from .books import Book
 from .lookup import Verse
