@@ -104,28 +104,36 @@ def _interactive_chapter(translation: str, book_num: int, start_chapter: int) ->
         raise typer.Exit(1)
 
     chapter = start_chapter
+    max_ch = get_chapter_count(translation, book)
+    verses: list = []
+    needs_redraw = True
+
     while True:
-        max_ch = get_chapter_count(translation, book)
-        verses = fetch_verses(translation, book, chapter)
-        if not verses:
-            print_error(f"No text found for {book.name} {chapter} in {translation.upper()}.")
-            raise typer.Exit(1)
+        if needs_redraw:
+            max_ch = get_chapter_count(translation, book)
+            verses = fetch_verses(translation, book, chapter)
+            if not verses:
+                print_error(f"No text found for {book.name} {chapter} in {translation.upper()}.")
+                raise typer.Exit(1)
 
-        chapter_notes = get_notes_for_chapter(book_num, chapter)
-        if chapter_notes:
-            display_verses_with_notes(verses, translation, chapter_notes)
-        else:
-            display_verses(verses, translation)
+            chapter_notes = get_notes_for_chapter(book_num, chapter)
+            if chapter_notes:
+                display_verses_with_notes(verses, translation, chapter_notes)
+            else:
+                display_verses(verses, translation)
 
-        record(translation, book_num, chapter)
-        _save_context(translation, book_num, chapter, verses[0].verse)
+            record(translation, book_num, chapter)
+            _save_context(translation, book_num, chapter, verses[0].verse)
+            needs_redraw = False
 
         choice = chapter_prompt(book, chapter, max_ch)
 
         if choice == "n" and chapter < max_ch:
             chapter += 1
+            needs_redraw = True
         elif choice == "p" and chapter > 1:
             chapter -= 1
+            needs_redraw = True
         elif choice == "b":
             path = Prompt.ask("  bookmark path (e.g. devotionals/morning)")
             bm_id = add_bookmark(path, translation, book_num, chapter, verses[0].verse)
@@ -135,18 +143,18 @@ def _interactive_chapter(translation: str, book_num: int, start_chapter: int) ->
                 vnum = int(Prompt.ask("  verse number"))
             except ValueError:
                 print_error("invalid verse number")
-                continue
-            existing = get_note(book_num, chapter, vnum)
-            if existing:
-                console.print(f"  [dim italic]existing: {existing}[/dim italic]")
-            text = Prompt.ask("  note")
-            upsert_note(book_num, chapter, vnum, text)
-            print_success("note saved")
+            else:
+                existing = get_note(book_num, chapter, vnum)
+                if existing:
+                    console.print(f"  [dim italic]existing: {existing}[/dim italic]")
+                text = Prompt.ask("  note")
+                upsert_note(book_num, chapter, vnum, text)
+                print_success("note saved")
         elif choice in ("q", "\x03", "\x1b", ""):
             break
 
 
-# ── Main lookup (default command) ─────────────────────────────────────────────────
+# ── Main lookup (default command) ─────────────────────────────────────────
 
 @app.callback(invoke_without_command=True)
 def lookup(
@@ -184,12 +192,12 @@ def lookup(
 
     tr = _tr(translation)
 
-    # ── chapter-level interactive reading ───────────────────────────────────────────────────────
+    # ── chapter-level interactive reading ────────────────────────────────────────────
     if verses is None:
         _interactive_chapter(tr, book.number, chapter or 1)
         return
 
-    # ── specific verse(s) ──────────────────────────────────────────────────────────────────────────────────
+    # ── specific verse(s) ────────────────────────────────────────────────────────────────────
     verse_list = fetch_verses(tr, book, chapter or 1, verses)
     if not verse_list:
         print_error(
@@ -237,7 +245,7 @@ def lookup(
         print_success("note saved")
 
 
-# ── Reading flow ────────────────────────────────────────────────────────────────────────
+# ── Reading flow ──────────────────────────────────────────────────────────────────
 
 @app.command(name="continue", help="Resume active reading plan or last read position.")
 def cont(
@@ -320,7 +328,7 @@ def done() -> None:
         print_success("plan complete!")
 
 
-# ── Discovery commands ────────────────────────────────────────────────────────────────────────
+# ── Discovery commands ──────────────────────────────────────────────────────────────────
 
 @app.command()
 def daily(
@@ -410,7 +418,7 @@ def compare(
     display_comparison(pairs)
 
 
-# ── First-time setup ───────────────────────────────────────────────────────────────────────────────────
+# ── First-time setup ───────────────────────────────────────────────────────────────────────
 
 @app.command()
 def setup() -> None:
@@ -503,7 +511,7 @@ def setup() -> None:
     console.print("\n  You're ready. Try: [bold]writ ge 1[/bold]\n")
 
 
-# ── Information commands ───────────────────────────────────────────────────────────────────────────────────
+# ── Information commands ───────────────────────────────────────────────────────────────────────
 
 @app.command()
 def history(
@@ -577,7 +585,7 @@ def set_config(
     print_success(f"{key} = {value}")
 
 
-# ── Bookmark subcommands ────────────────────────────────────────────────────────────────────────────────
+# ── Bookmark subcommands ─────────────────────────────────────────────────────────────────────
 
 @bookmark_app.callback(invoke_without_command=True)
 def _bm_default(ctx: typer.Context) -> None:
@@ -659,7 +667,7 @@ def bm_remove(
         print_error(f"bookmark #{bookmark_id} not found")
 
 
-# ── Note subcommands ────────────────────────────────────────────────────────────────────────────────────
+# ── Note subcommands ──────────────────────────────────────────────────────────────────────────
 
 @note_app.command(name="add")
 def note_add(
@@ -725,7 +733,7 @@ def note_remove(
         print_error("note not found")
 
 
-# ── Plan subcommands ────────────────────────────────────────────────────────────────────────────────────
+# ── Plan subcommands ──────────────────────────────────────────────────────────────────────────
 
 @plan_app.command(name="load")
 def plan_load(
