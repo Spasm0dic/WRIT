@@ -104,28 +104,36 @@ def _interactive_chapter(translation: str, book_num: int, start_chapter: int) ->
         raise typer.Exit(1)
 
     chapter = start_chapter
+    max_ch = get_chapter_count(translation, book)
+    verses: list = []
+    needs_redraw = True
+
     while True:
-        max_ch = get_chapter_count(translation, book)
-        verses = fetch_verses(translation, book, chapter)
-        if not verses:
-            print_error(f"No text found for {book.name} {chapter} in {translation.upper()}.")
-            raise typer.Exit(1)
+        if needs_redraw:
+            max_ch = get_chapter_count(translation, book)
+            verses = fetch_verses(translation, book, chapter)
+            if not verses:
+                print_error(f"No text found for {book.name} {chapter} in {translation.upper()}.")
+                raise typer.Exit(1)
 
-        chapter_notes = get_notes_for_chapter(book_num, chapter)
-        if chapter_notes:
-            display_verses_with_notes(verses, translation, chapter_notes)
-        else:
-            display_verses(verses, translation)
+            chapter_notes = get_notes_for_chapter(book_num, chapter)
+            if chapter_notes:
+                display_verses_with_notes(verses, translation, chapter_notes)
+            else:
+                display_verses(verses, translation)
 
-        record(translation, book_num, chapter)
-        _save_context(translation, book_num, chapter, verses[0].verse)
+            record(translation, book_num, chapter)
+            _save_context(translation, book_num, chapter, verses[0].verse)
+            needs_redraw = False
 
         choice = chapter_prompt(book, chapter, max_ch)
 
         if choice == "n" and chapter < max_ch:
             chapter += 1
+            needs_redraw = True
         elif choice == "p" and chapter > 1:
             chapter -= 1
+            needs_redraw = True
         elif choice == "b":
             path = Prompt.ask("  bookmark path (e.g. devotionals/morning)")
             bm_id = add_bookmark(path, translation, book_num, chapter, verses[0].verse)
@@ -135,13 +143,13 @@ def _interactive_chapter(translation: str, book_num: int, start_chapter: int) ->
                 vnum = int(Prompt.ask("  verse number"))
             except ValueError:
                 print_error("invalid verse number")
-                continue
-            existing = get_note(book_num, chapter, vnum)
-            if existing:
-                console.print(f"  [dim italic]existing: {existing}[/dim italic]")
-            text = Prompt.ask("  note")
-            upsert_note(book_num, chapter, vnum, text)
-            print_success("note saved")
+            else:
+                existing = get_note(book_num, chapter, vnum)
+                if existing:
+                    console.print(f"  [dim italic]existing: {existing}[/dim italic]")
+                text = Prompt.ask("  note")
+                upsert_note(book_num, chapter, vnum, text)
+                print_success("note saved")
         elif choice in ("q", "\x03", "\x1b", ""):
             break
 

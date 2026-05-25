@@ -109,18 +109,22 @@ def display_verses_with_notes(verses: list[Verse], translation: str, notes: dict
 
 def chapter_prompt(book: Book, chapter: int, max_chapter: int) -> str:
     """Render nav bar and return a single-char choice."""
-    parts: list[str] = []
+    bar = Text("  ")
     if chapter > 1:
-        parts.append("[p]rev")
+        bar.append("[p]", style="bold")
+        bar.append("rev  ")
     if chapter < max_chapter:
-        parts.append("[n]ext")
-    parts.append("[b]ookmark")
-    parts.append("[+]note")
-    parts.append("[q]uit")
-
-    console.print("  " + "  ".join(parts), end="  ", highlight=False)
+        bar.append("[n]", style="bold")
+        bar.append("ext  ")
+    bar.append("[b]", style="bold")
+    bar.append("ookmark  ")
+    bar.append("[+]", style="bold")
+    bar.append("note  ")
+    bar.append("[q]", style="bold")
+    bar.append("uit")
+    console.print(bar, end="")
     ch = getch()
-    console.print(ch)   # echo the character
+    console.print()
     return ch.lower()
 
 
