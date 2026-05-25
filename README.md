@@ -26,7 +26,7 @@ This will:
 2. Install `writ` into that venv
 3. Symlink `writ` to `~/.local/bin/writ`
 4. Add `~/.local/bin` to your PATH if needed
-5. Download and install the World English Bible (public domain)
+5. Download and install the King James Bible (public domain)
 
 After install, open a new terminal or run `source ~/.bashrc` and you're ready:
 
@@ -40,7 +40,7 @@ writ ge 1
 
 ## Translations
 
-`writ setup` (run automatically on install) downloads the **World English Bible** — fully public domain, no license restrictions.
+`writ setup` (run automatically on install) downloads the **King James Bible** — public domain, no license restrictions.
 
 To add more translations, use the bundled importer:
 
@@ -169,12 +169,12 @@ writ search "fear not" -b is          # search within Isaiah only
 writ daily                            # verse of the day (deterministic, offline)
 writ random                           # random verse
 writ random ps                        # random verse from Psalms
-writ compare ge 1 1 web,kjv           # side-by-side translation comparison
+writ compare ge 1 1 kjv,web           # side-by-side translation comparison
 writ history                          # recent reading history + streak
 writ translations                     # list installed translations
 writ books                            # all 66 books + abbreviations
-writ set translation web              # set default translation
-writ setup                            # re-download / reinstall WEB translation
+writ set translation kjv              # set default translation
+writ setup                            # re-download / reinstall KJV translation
 ```
 
 ---
@@ -187,7 +187,7 @@ All user data lives at `~/.local/share/writ/` (override with `$WRIT_DATA`):
 ~/.local/share/writ/
 ├── writ.db                  # bookmarks, notes, plans, history, settings
 └── translations/
-    ├── web.db
+    ├── kjv.db
     └── ...
 ```
 
