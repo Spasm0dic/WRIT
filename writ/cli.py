@@ -69,7 +69,7 @@ app.add_typer(plan_app,     name="plan")
 app.add_typer(note_app,     name="note")
 
 
-# ── Shared helpers ─────────────────────────────────────────────────────────
+# ── Shared helpers ──────────────────────────────────────────────────────────
 
 def _tr(translation: str | None) -> str:
     return translation.lower() if translation else get_default_translation()
@@ -154,7 +154,7 @@ def _interactive_chapter(translation: str, book_num: int, start_chapter: int) ->
             break
 
 
-# ── Main lookup (default command) ─────────────────────────────────────────
+# ── Main lookup (default command) ───────────────────────────────────────────
 
 @app.callback(invoke_without_command=True)
 def lookup(
@@ -182,7 +182,14 @@ def lookup(
         return
 
     book_ref = args[0]
-    chapter: Optional[int] = int(args[1]) if len(args) > 1 else None
+    if len(args) > 1:
+        try:
+            chapter: Optional[int] = int(args[1])
+        except ValueError:
+            print_error(f"unknown command or invalid chapter '{args[1]}' — try [bold]writ --help[/bold]")
+            raise typer.Exit(1)
+    else:
+        chapter = None
     verses:  Optional[str] = args[2]       if len(args) > 2 else None
 
     book = resolve_book(book_ref)
@@ -192,7 +199,7 @@ def lookup(
 
     tr = _tr(translation)
 
-    # ── chapter-level interactive reading ────────────────────────────────────────────
+    # ── chapter-level interactive reading ──────────────────────────────────────────────
     if verses is None:
         _interactive_chapter(tr, book.number, chapter or 1)
         return
@@ -418,7 +425,7 @@ def compare(
     display_comparison(pairs)
 
 
-# ── First-time setup ───────────────────────────────────────────────────────────────────────
+# ── First-time setup ────────────────────────────────────────────────────────────────────────
 
 @app.command()
 def setup() -> None:
@@ -585,7 +592,7 @@ def set_config(
     print_success(f"{key} = {value}")
 
 
-# ── Bookmark subcommands ─────────────────────────────────────────────────────────────────────
+# ── Bookmark subcommands ───────────────────────────────────────────────────────────────────────
 
 @bookmark_app.callback(invoke_without_command=True)
 def _bm_default(ctx: typer.Context) -> None:
