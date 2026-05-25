@@ -182,7 +182,14 @@ def lookup(
         return
 
     book_ref = args[0]
-    chapter: Optional[int] = int(args[1]) if len(args) > 1 else None
+    if len(args) > 1:
+        try:
+            chapter: Optional[int] = int(args[1])
+        except ValueError:
+            print_error(f"unknown command or invalid chapter '{args[1]}' — try [bold]writ --help[/bold]")
+            raise typer.Exit(1)
+    else:
+        chapter = None
     verses:  Optional[str] = args[2]       if len(args) > 2 else None
 
     book = resolve_book(book_ref)
