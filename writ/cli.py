@@ -55,7 +55,7 @@ app = typer.Typer(
     help="Lightning-fast terminal Bible reference and reading tool.",
     invoke_without_command=True,
     no_args_is_help=False,
-    add_completion=True,
+    add_completion=False,
     rich_markup_mode="rich",
 )
 
@@ -64,7 +64,7 @@ plan_app     = typer.Typer(help="Manage reading plans.", no_args_is_help=True)
 note_app     = typer.Typer(help="Manage verse margin notes.", no_args_is_help=True)
 
 app.add_typer(bookmark_app, name="bookmark")
-app.add_typer(bookmark_app, name="bm")
+app.add_typer(bookmark_app, name="bm", hidden=True)
 app.add_typer(plan_app,     name="plan")
 app.add_typer(note_app,     name="note")
 
